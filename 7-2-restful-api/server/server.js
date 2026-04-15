@@ -17,10 +17,12 @@ app.use(express.json());
 await connectDB(process.env.MONGO_URL);
 
 // TODO 4 — GET /api/songs (Read all)
-app.get("/api/songs", async (req, res) => {
+// GET /api/songs/:id (Read single song)
+app.get("/api/songs/:id", async (req, res) => {
   try {
-    const rows = await Song.find().sort({ createdAt: -1 });
-    res.json(rows);
+    const song = await Song.findById(req.params.id);
+    if (!song) return res.status(404).json({ message: "Song not found" });
+    res.json(song);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
