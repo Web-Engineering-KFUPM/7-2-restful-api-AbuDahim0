@@ -16,8 +16,17 @@ app.use(express.json());
 
 await connectDB(process.env.MONGO_URL);
 
-// TODO 4 — GET /api/songs (Read all)
-// GET /api/songs/:id (Read single song)
+// TODO 4 — GET /api/songs (Read all songs + Sort by newest)
+app.get("/api/songs", async (req, res) => {
+  try {
+    const rows = await Song.find().sort({ createdAt: -1 });
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// TODO 4 — GET /api/songs/:id (Read single song)
 app.get("/api/songs/:id", async (req, res) => {
   try {
     const song = await Song.findById(req.params.id);
@@ -28,7 +37,7 @@ app.get("/api/songs/:id", async (req, res) => {
   }
 });
 
-// TODO 3 — POST /api/songs (Insert)
+// TODO 3 — POST /api/songs (Insert song)
 app.post("/api/songs", async (req, res) => {
   try {
     const { title = "", artist = "", year } = req.body || {};
@@ -43,7 +52,7 @@ app.post("/api/songs", async (req, res) => {
   }
 });
 
-// TODO 5 — PUT /api/songs/:id (Update)
+// TODO 5 — PUT /api/songs/:id (Update song)
 app.put("/api/songs/:id", async (req, res) => {
   try {
     const updated = await Song.findByIdAndUpdate(
@@ -58,7 +67,7 @@ app.put("/api/songs/:id", async (req, res) => {
   }
 });
 
-// TODO 6 — DELETE /api/songs/:id
+// TODO 6 — DELETE /api/songs/:id (Delete song)
 app.delete("/api/songs/:id", async (req, res) => {
   try {
     const deleted = await Song.findByIdAndDelete(req.params.id);
